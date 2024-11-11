@@ -1,0 +1,54 @@
+import java.util.Scanner;
+public class FCFS{
+    int count = 0;
+    int[][] prodata;
+    Scanner scan = new Scanner(System.in);
+    public void setval(){
+        System.out.println("\nENterno of processes");
+        count = scan.nextInt();
+        prodata = new int[count][4];
+        for(int i = 0;i<count;i++){
+            System.out.println("enter burst time of process:"+i);
+            prodata[i][0]=i;
+            prodata[i][1]=scan.nextInt();
+        }
+        sort();
+    }
+    public void sort(){
+        for(int i=0;i<count;i++){
+            int eledata = prodata[i][1];
+            int ele = i;
+            for(int j = i+1;j<count;j++){
+                if(eledata>prodata[j][1]){
+                    eledata = prodata[j][1];
+                    ele = j;
+                }
+            }
+            swap(i,ele);
+        }
+    }
+    public void swap(int p1,int p2){
+        int[] temp = prodata[p1];
+        prodata[p1]=prodata[p2];
+        prodata[p2]=temp;
+    }
+     public void schedule(){
+        prodata[0][2]=0;
+        prodata[0][3]=prodata[0][1];
+        for(int i = 1;i<count;i++){
+            prodata[i][2]=prodata[i-1][3];
+            prodata[i][3]=prodata[i][2]+prodata[i][1];
+        }
+     }
+    public void display(){
+        for(int i =0;i<count;i++){
+            System.out.println("process: "+prodata[i][0]+" burst time: "+prodata[i][1]+" waiting: "+prodata[i][2]+" tunaround: "+prodata[i][3]);
+        }
+    }
+    public static void main(String[] args){
+    FCFS fc=new FCFS();
+    fc.setval();
+    fc.schedule();
+    fc.display();
+}
+}

@@ -1,62 +1,77 @@
 import java.util.Scanner;
 
-public class RoundRobin {
-    int count;
-    int[][] processData; // Stores process ID, Burst Time, Start Time, End Time
-    int[] remainingTime; // Remaining burst time for each process
-    int quantum; // Time slice or round-trip time (RTT)
-    Scanner scan = new Scanner(System.in);
-    public static void main(String[] args) {
-        RoundRobin rr = new RoundRobin();
-        rr.setValue();
-        System.out.println("\nBefore Scheduling");
-        rr.displayValues();
-        rr.scheduleRR();
-        System.out.println("\nAfter Scheduling");
-        rr.displayValues();
-    }
-    public void setValue() {
-        System.out.print("Enter Number of processes: ");
-        count = scan.nextInt();
-        System.out.print("Enter Round Trip Time (RTT): ");
-        quantum = scan.nextInt();
-        processData = new int[count][4]; // Stores Process ID, Burst Time, Start Time, End Time
-        remainingTime = new int[count];
-        for (int i = 0; i < count; i++) {
-            System.out.print("Process [" + i + "] -> Burst Time: ");
-            processData[i][0] = i; // Process ID
-            processData[i][1] = scan.nextInt(); // Burst Time
-            remainingTime[i] = processData[i][1]; // Set remaining time initially as burst time
+public class RR {
+    public static void main(String args[]) {
+        int n, i, qt, count = 0, temp, sq = 0;
+        int[] bt = new int[10];    // Burst Time
+        int[] wt = new int[10];    // Waiting Time
+        int[] tat = new int[10];   // Turnaround Time
+        int[] rem_bt = new int[10];  // Remaining Burst Time
+        float awt = 0, atat = 0;    // Average Waiting Time and Average Turnaround Time
+        Scanner s = new Scanner(System.in);
+        
+        System.out.print("Enter the number of processes (maximum 10): ");
+        n = s.nextInt();
+        
+        System.out.print("Enter the burst time of the processes:\n");
+        for (i = 0; i < n; i++) {
+            System.out.print("P" + i + " = ");
+            bt[i] = s.nextInt();
+            rem_bt[i] = bt[i]; // Initialize remaining burst time
         }
-    }
-    public void scheduleRR() {
-        boolean done = false;
-        boolean[] started = new boolean[count]; // Track if a process has started
-        int time = 0;
-        while (!done) {
-            done = true; // Assume all processes are completed unless proven otherwise
-            for (int i = 0; i < count; i++) {
-                if (remainingTime[i] > 0) {  // If the process still has remaining burst time
-                    done = false;  // Not done if there are still processes with remaining time
-                    if (!started[i]) {
-                        processData[i][2] = time;  // Set the start time for the current process
-                        started[i] = true;  // Mark this process as started
-                    }
-                    int exec = Math.min(remainingTime[i], quantum);
-                    time += exec;
-                    processData[i][3] = time;
-                    remainingTime[i] -= exec; 
+        
+        System.out.print("Enter the quantum time: ");
+        qt = s.nextInt();
+
+        // Round Robin Scheduling Logic
+        while (true) {
+            for (i = 0, count = 0; i < n; i++) {
+                temp = qt;
+
+                // Skip process if it is already completed
+                if (rem_bt[i] == 0) {
+                    count++;
+                    continue;
                 }
+
+                // If remaining burst time is greater than quantum, reduce by quantum
+                if (rem_bt[i] > qt) {
+                    rem_bt[i] -= qt;
+                }
+                // If remaining burst time is less than or equal to quantum, execute fully
+                else if (rem_bt[i] >= 0) {
+                    temp = rem_bt[i];
+                    rem_bt[i] = 0;
+                }
+
+                // Update the total execution time
+                sq += temp;
+                tat[i] = sq;
             }
+
+            if (n == count) break; // Exit when all processes are finished
         }
-    }
-    public void displayValues() {
-        System.out.println("---------------------------------------------------------------");
-        System.out.println("Process ID | Burst Time | Start Time | End Time");
-        System.out.println("---------------------------------------------------------------");
-        for (int i = 0; i < count; i++) {
-            System.out.println("   P[" + processData[i][0] + "]    |    " + processData[i][1] + "    |    " + processData[i][2] + "    |   " + processData[i][3]);
+
+        // Print the Process Information Table
+        System.out.println("--------------------------------------------------------------------------------");
+        System.out.println("Process\t Burst Time\t Turnaround Time\t Waiting Time");
+        System.out.println("--------------------------------------------------------------------------------");
+
+        // Calculate waiting time and print results
+        for (i = 0; i < n; i++) {
+            wt[i] = tat[i] - bt[i];
+            awt += wt[i];
+            atat += tat[i];
+            System.out.printf("P%d\t %d\t\t %d\t\t %d\n", i + 1, bt[i], tat[i], wt[i]);
         }
-        System.out.println("---------------------------------------------------------------");
+
+        // Calculate averages
+        awt /= n;
+        atat /= n;
+
+        // Print average times
+        System.out.println("--------------------------------------------------------------------------------");
+        System.out.printf("\nAverage Waiting Time = %.2f\n", awt);
+        System.out.printf("Average Turnaround Time = %.2f\n", atat);
     }
 }

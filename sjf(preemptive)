@@ -1,0 +1,58 @@
+import java.util.Scanner;
+
+public class SJFPreemptive {
+    int count, currentTime = 0;
+    int[][] processData;
+    Scanner scan = new Scanner(System.in);
+    public static void main(String[] args) {
+        SJFPreemptive scheduler = new SJFPreemptive();
+        scheduler.setValues();
+        System.out.println("\nBefore Scheduling"); scheduler.displayValues();
+        scheduler.scheduleSJFPreemptive();
+        System.out.println("\nAfter Scheduling"); scheduler.displayValues();
+    }
+    public void setValues() {
+        System.out.print("Enter Number of processes: ");
+        count = scan.nextInt();
+        processData = new int[count][6]; // Process ID, Arrival Time, Burst Time, Start Time, End Time, Remaining Time
+        for (int i = 0; i < count; i++) {
+            processData[i][0] = i;
+            System.out.print("Process [" + i + "] -> Arrival Time: ");
+            processData[i][1] = scan.nextInt();
+            System.out.print("Process [" + i + "] -> Burst Time: ");
+            processData[i][2] = scan.nextInt();
+            processData[i][5] = processData[i][2]; // Initial remaining time is burst time
+        }
+    }
+    public void scheduleSJFPreemptive() {
+        int completedProcesses = 0;
+        while (completedProcesses < count) {
+            int shortestJobIndex = -1, minRemainingTime = Integer.MAX_VALUE;
+            for (int i = 0; i < count; i++) {
+                if (processData[i][1] <= currentTime && processData[i][5] > 0 && processData[i][5] < minRemainingTime) {
+                    minRemainingTime = processData[i][5];
+                    shortestJobIndex = i;
+                }
+            }
+            if (shortestJobIndex == -1) currentTime++;
+            else {
+                if (processData[shortestJobIndex][3] == 0) processData[shortestJobIndex][3] = currentTime; // Start Time
+                processData[shortestJobIndex][5]--; currentTime++;
+                if (processData[shortestJobIndex][5] == 0) {
+                    processData[shortestJobIndex][4] = currentTime; // End Time
+                    completedProcesses++;
+                }
+            }
+        }
+    }
+    public void displayValues() {
+        System.out.println("------------------------------------------------------------");
+        System.out.println("Process ID | Arrival Time | Burst Time | Start Time | End Time");
+        System.out.println("------------------------------------------------------------");
+        for (int i = 0; i < count; i++) {
+            System.out.printf("   P[%d]       |      %d       |     %d      |     %d      |     %d%n",
+                    processData[i][0], processData[i][1], processData[i][2], processData[i][3], processData[i][4]);
+        }
+        System.out.println("------------------------------------------------------------");
+    }
+}

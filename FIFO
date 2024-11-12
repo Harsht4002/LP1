@@ -1,0 +1,36 @@
+import java.util.Scanner;
+import java.util.Queue;
+import java.util.LinkedList;
+
+public class fifo{
+    public static void main(String[] args){
+    Scanner scan = new Scanner(System.in);
+    System.out.println("enter frames: ");
+    int frames=scan.nextInt();
+    System.out.println("enter no. of pages ");
+    int no = scan.nextInt();
+    int[] pages = new int[no];
+    for(int i = 0;i<no; i++){
+        pages[i]=scan.nextInt();
+    }
+    int faults = fiforeplacement(pages,frames);
+    System.out.print("pg faults are: "+faults);
+    }
+    
+    public static int fiforeplacement(int[] pages,int frames){
+        Queue memory = new LinkedList();
+        int pagefaults = 0;
+    
+        for(int pg:pages){
+            if(!memory.contains(pg)){
+                pagefaults++;
+                if(memory.size()==frames){
+                    memory.poll();
+                }
+                memory.add(pg);
+            }
+            System.out.println("memory: "+memory);
+        }
+        return pagefaults;
+    }
+}

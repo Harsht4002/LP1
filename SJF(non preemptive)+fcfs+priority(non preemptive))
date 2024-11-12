@@ -1,4 +1,5 @@
 import java.util.Scanner;
+//for fcfs dont sort, for priority instead of burst time include priority as input and sort by that
 public class FCFS{
     int count = 0;
     int[][] prodata;

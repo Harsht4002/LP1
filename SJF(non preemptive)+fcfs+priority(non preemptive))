@@ -13,7 +13,7 @@ public class FCFS{
             prodata[i][0]=i;
             prodata[i][1]=scan.nextInt();
         }
-        sort();
+        sort();//dont do this for fcfs
     }
     public void sort(){
         for(int i=0;i<count;i++){

@@ -36,8 +36,9 @@ public class SJFPreemptive {
             }
             if (shortestJobIndex == -1) currentTime++;
             else {
-                if (processData[shortestJobIndex][3] == 0) processData[shortestJobIndex][3] = currentTime; // Start Time
-                processData[shortestJobIndex][5]--; currentTime++;
+                if (processData[shortestJobIndex][2] == processData[shortestJobIndex][5]) processData[shortestJobIndex][3] = currentTime; // Start Time
+                processData[shortestJobIndex][5]--;
+                currentTime++;
                 if (processData[shortestJobIndex][5] == 0) {
                     processData[shortestJobIndex][4] = currentTime; // End Time
                     completedProcesses++;

@@ -1,0 +1,62 @@
+import java.util.Scanner;
+
+public class RoundRobin {
+    int count;
+    int[][] processData; // Stores process ID, Burst Time, Start Time, End Time
+    int[] remainingTime; // Remaining burst time for each process
+    int quantum; // Time slice or round-trip time (RTT)
+    Scanner scan = new Scanner(System.in);
+    public static void main(String[] args) {
+        RoundRobin rr = new RoundRobin();
+        rr.setValue();
+        System.out.println("\nBefore Scheduling");
+        rr.displayValues();
+        rr.scheduleRR();
+        System.out.println("\nAfter Scheduling");
+        rr.displayValues();
+    }
+    public void setValue() {
+        System.out.print("Enter Number of processes: ");
+        count = scan.nextInt();
+        System.out.print("Enter Round Trip Time (RTT): ");
+        quantum = scan.nextInt();
+        processData = new int[count][4]; // Stores Process ID, Burst Time, Start Time, End Time
+        remainingTime = new int[count];
+        for (int i = 0; i < count; i++) {
+            System.out.print("Process [" + i + "] -> Burst Time: ");
+            processData[i][0] = i; // Process ID
+            processData[i][1] = scan.nextInt(); // Burst Time
+            remainingTime[i] = processData[i][1]; // Set remaining time initially as burst time
+        }
+    }
+    public void scheduleRR() {
+        boolean done = false;
+        boolean[] started = new boolean[count]; // Track if a process has started
+        int time = 0;
+        while (!done) {
+            done = true; // Assume all processes are completed unless proven otherwise
+            for (int i = 0; i < count; i++) {
+                if (remainingTime[i] > 0) {  // If the process still has remaining burst time
+                    done = false;  // Not done if there are still processes with remaining time
+                    if (!started[i]) {
+                        processData[i][2] = time;  // Set the start time for the current process
+                        started[i] = true;  // Mark this process as started
+                    }
+                    int exec = Math.min(remainingTime[i], quantum);
+                    time += exec;
+                    processData[i][3] = time;
+                    remainingTime[i] -= exec; 
+                }
+            }
+        }
+    }
+    public void displayValues() {
+        System.out.println("---------------------------------------------------------------");
+        System.out.println("Process ID | Burst Time | Start Time | End Time");
+        System.out.println("---------------------------------------------------------------");
+        for (int i = 0; i < count; i++) {
+            System.out.println("   P[" + processData[i][0] + "]    |    " + processData[i][1] + "    |    " + processData[i][2] + "    |   " + processData[i][3]);
+        }
+        System.out.println("---------------------------------------------------------------");
+    }
+}

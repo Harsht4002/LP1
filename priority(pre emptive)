@@ -1,0 +1,60 @@
+import java.util.Scanner;
+
+public class PriorityPreemptive {
+    int count, currentTime = 0;
+    int[][] processData;
+    Scanner scan = new Scanner(System.in);
+    public static void main(String[] args) {
+        PriorityPreemptive scheduler = new PriorityPreemptive();
+        scheduler.setValues();
+        System.out.println("\nBefore Scheduling"); scheduler.displayValues();
+        scheduler.schedulePriorityPreemptive();
+        System.out.println("\nAfter Scheduling"); scheduler.displayValues();
+    }
+    public void setValues() {
+        System.out.print("Enter Number of processes: ");
+        count = scan.nextInt();
+        processData = new int[count][7];
+        for (int i = 0; i < count; i++) {
+            processData[i][0] = i;
+            System.out.print("Process [" + i + "] -> Arrival Time: ");
+            processData[i][1] = scan.nextInt();
+            System.out.print("Process [" + i + "] -> Burst Time: ");
+            processData[i][2] = scan.nextInt();
+            System.out.print("Process [" + i + "] -> Priority: ");
+            processData[i][3] = scan.nextInt();
+            processData[i][6] = processData[i][2];
+        }
+    }
+    public void schedulePriorityPreemptive() {
+        int completedProcesses = 0;
+        while (completedProcesses < count) {
+            int highestPriorityIndex = -1, highestPriority = Integer.MAX_VALUE;
+            for (int i = 0; i < count; i++) {
+                if (processData[i][1] <= currentTime && processData[i][6] > 0 && processData[i][3] < highestPriority) {
+                    highestPriority = processData[i][3];
+                    highestPriorityIndex = i;
+                }
+            }
+            if (highestPriorityIndex == -1) currentTime++;
+            else {
+                if (processData[highestPriorityIndex][4] == 0) processData[highestPriorityIndex][4] = currentTime;
+                processData[highestPriorityIndex][6]--; currentTime++;
+                if (processData[highestPriorityIndex][6] == 0) {
+                    processData[highestPriorityIndex][5] = currentTime;
+                    completedProcesses++;
+                }
+            }
+        }
+    }
+    public void displayValues() {
+        System.out.println("-----------------------------------------------------------------------");
+        System.out.println("Process ID | Arrival Time | Burst Time | Priority | Start Time | End Time");
+        System.out.println("-----------------------------------------------------------------------");
+        for (int i = 0; i < count; i++) {
+            System.out.printf("   P[%d]       |      %d       |     %d      |    %d     |      %d      |     %d%n",
+                    processData[i][0], processData[i][1], processData[i][2], processData[i][3], processData[i][4], processData[i][5]);
+        }
+        System.out.println("-----------------------------------------------------------------------");
+    }
+}
